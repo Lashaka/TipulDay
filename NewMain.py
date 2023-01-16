@@ -31,13 +31,13 @@ import re
 ###############################################################################################################################################################################
 
 # Default variables
-
-SearchStartNum = 0
-websites = []
-SuccessfullForms=0
-FailedForms=0
-###############################################################################################################################################################################
 def StartTipulDay(searchstring,amountofwebsitestosendformsto,formnamevalue,formphonenumbervalue,formemailvalue,formcommentvalue,booladdspecificwebsites,specificwebsites):
+
+    SearchStartNum = 0
+    websites = []
+    SuccessfullForms=0
+    FailedForms=0
+###############################################################################################################################################################################
     # Before we start, set the next parameters:
 
     # the google search value to submit values into
