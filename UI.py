@@ -3,6 +3,8 @@ import PySimpleGUI as sg
 
 import NewMain as main
 
+import os
+
 # If MoreWebsites is True, add websites to specificwebsites list
 MoreWebsites = False
 
@@ -11,7 +13,7 @@ websites = ''
 def submit_form():
     # Get values from form
     SearchString = values['searchstring']
-    AmountOfWebsitesToSendFormsTo = int(values['websiteamount'])
+    AmountOfWebsitesToSendFormsTo = int(float(values['websiteamount']))
     FormNameValue = values['name']
     FormPhoneNumberValue = values['phone']
     FormEmailValue = values['email']
@@ -25,7 +27,7 @@ def submit_form():
 
         # Submit form using values
         try:
-            main.StartTipulDay(SearchString,AmountOfWebsitesToSendFormsTo,FormNameValue,FormPhoneNumberValue,FormEmailValue,FormCommentValue,MoreWebsites,SpecificWebsites)
+            main.StartTipulDay(SearchString,AmountOfWebsitesToSendFormsTo,FormNameValue,FormPhoneNumberValue,FormEmailValue,FormCommentValue,MoreWebsites,SpecificWebsites,form)
             pass
         except:
             pass
@@ -49,7 +51,10 @@ layout = [[sg.Text('Search String'), sg.Input(key='searchstring')],
           [sg.Button('Add Proxies (Optional)', key='proxies'),
            sg.Multiline(key='proxiesinput', visible=False)],   
           [sg.Button('Submit', key='submit', button_color=('white', 'green'), bind_return_key=True),
-           sg.Button('Cancel', key='cancel', button_color=('white', 'red'))]]
+           sg.Button('Cancel', key='cancel', button_color=('white', 'red'))],
+           [sg.Text('Console Output:')],
+           [sg.Text()],
+           [sg.Multiline(key='console', size=(45,5))]]
 
 # Create form and show it
 form = sg.Window('TipulDay', layout)
@@ -58,9 +63,15 @@ form = sg.Window('TipulDay', layout)
 while True:
     event, values = form.Read()
     if event in (None, 'cancel'):
+        os._exit(0) # stops all code execution and exits the program
         break
     elif event == 'submit':
-        submit_form()
+        try:
+            submit_form()
+        except Exception as error:
+            console = form.find_element('console')
+            console.print(str(error))
+
     elif event == 'sampleinfo':    
         form.find_element('searchstring').Update('Dog Adopting leave your details')   
         form.find_element('websiteamount').Update('10')          
@@ -88,4 +99,6 @@ while True:
             form.find_element('proxiesinput').Update(visible=True)
             form.find_element('proxies').Update('Remove Proxies')    
             MoreWebsites=False      
+            
 form.Close()
+
