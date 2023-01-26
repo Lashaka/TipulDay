@@ -80,7 +80,7 @@ class UI:
         [sg.Text()],
         [sg.Multiline(
         key='console', 
-        size=(45,5))]]
+        size=(80,30))]]
         form = sg.Window(
         'TipulDay', 
         layout
