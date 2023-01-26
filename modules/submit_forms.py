@@ -15,6 +15,7 @@ class Submit_forms(object):
             console
 
             ) -> None:
+        self.console = console
         self.FORM_NAME = formname
         self.FORM_EMAIL = formemail
         self.FORM_COMMENT = formcomment
@@ -22,18 +23,26 @@ class Submit_forms(object):
         self.SuccessfullForms=0
         self.FailedForms=0  
         self.websites = websites
-        self.console = console
+
         self.url = url
 
     def main(self) -> None:
-        self.console.print(self.FORM_EMAIL,self.FORM_COMMENT,self.FORM_NAME,self.FORM_PHONE)
-        self.console.print(const.SUBMIT_FORMS_TEXT)
+        if self.console !=None:
+            self.console.print(self.FORM_EMAIL,self.FORM_COMMENT,self.FORM_NAME,self.FORM_PHONE)
+            self.console.print(const.SUBMIT_FORMS_TEXT)
+        else:
+            print(self.FORM_EMAIL,self.FORM_COMMENT,self.FORM_NAME,self.FORM_PHONE)
+            print(const.SUBMIT_FORMS_TEXT)
         if len(self.websites) > 0:
             for website in self.websites:
                 try:
                     response = requests.get(website)
                 except:
-                    self.console.print(const.ERROR_5_TEXT)
+                    if self.console !=None:
+                        self.console.print(const.ERROR_5_TEXT)
+                    else:
+                        print(const.ERROR_5_TEXT)
+
                     self.FailedForms += 1
                     continue
                 
@@ -81,33 +90,59 @@ class Submit_forms(object):
                         if "Comment" in data or "message" in data or "details" in data  or "text" in data or "4" in data or "form_field_4" in data:
                             form_data[data] = self.FORM_COMMENT             
                     except:
-                        self.console.print(const.ERROR_6_TEXT, website)
+                        if self.console !=None:
+                            self.console.print(const.ERROR_6_TEXT, website)
+                        else:
+                            print(const.ERROR_6_TEXT, website)
 
                    
                 if len(form_data) is 0:
-                    self.console.print(const.ERROR_7_TEXT)
+                    if self.console !=None:
+                        self.console.print(const.ERROR_7_TEXT)
+                    else:
+                        print(const.ERROR_7_TEXT)
                     self.FailedForms += 1
                     continue
                 else:
                     try:
-                        self.console.print(const.TRYING_TO_POST, form_data)
+                        if self.console !=None:
+                            self.console.print(const.TRYING_TO_POST, form_data)
+                        else:
+                            print(const.TRYING_TO_POST, form_data)
                         response = requests.post(website, data=form_data)
                     except:
-                        self.console.print(const.ERROR_4_TEXT)
+                        if self.console !=None:
+                            self.console.print(const.ERROR_4_TEXT)
+                        else:
+                            print(const.ERROR_4_TEXT)
                         self.FailedForms += 1
                         continue
 
-                    if response.status_code == 200:  
-                        self.console.print(const.SUCCESS_200_TEXT + website)
+                    if response.status_code == 200:
+                        if self.console !=None:
+                            self.console.print(const.SUCCESS_200_TEXT + website)
+                        else:
+                            print(const.SUCCESS_200_TEXT + website)
                         self.SuccessfullForms += 1
                         continue
                     else:
-                        self.console.print(const.ERROR_2_TEXT,response.status_code)
+                        if self.console !=None:
+                            self.console.print(const.ERROR_2_TEXT,response.status_code)
+                        else:
+                            print(const.ERROR_2_TEXT,response.status_code)
                         self.FailedForms += 1
                         continue
-            self.console.print("[*] Finished Submitting Forms")
-            self.console.print('\n\tSuccessfully Filled Forms:', str(self.SuccessfullForms))
-            self.console.print('\n\tFailed Forms:', str(self.FailedForms))  
+            if self.console !=None:
+                self.console.print("[*] Finished Submitting Forms")
+                self.console.print('\n\tSuccessfully Filled Forms:', str(self.SuccessfullForms))
+                self.console.print('\n\tFailed Forms:', str(self.FailedForms))
+            else:
+                print("[*] Finished Submitting Forms")
+                print('\n\tSuccessfully Filled Forms:', str(self.SuccessfullForms))
+                print('\n\tFailed Forms:', str(self.FailedForms))
         else:
-            self.console.print(const.ERROR_1_TEXT)
+            if self.console !=None:
+                self.console.print(const.ERROR_1_TEXT)
+            else:
+                print(const.ERROR_1_TEXT)
 

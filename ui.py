@@ -1,15 +1,13 @@
 import PySimpleGUI as sg
 from threading import Thread
-from main import main
+from modules.main import main
 class UI:
     def __init__(self):
         self.MoreWebsites = False
         self.websites = []
         self.form = self.create_window()
-        Thread(self.get_UI_events()).start()
+        self.get_UI_events()
 
-    def refresh_window(self):
-        self.form.refresh()
 
     def submit_form(self):
         SearchString = self.values["searchstring"]
@@ -34,7 +32,7 @@ class UI:
             FormCommentValue,
             self.websites,
             self.form.find_element('console')
-            ).main()).start()
+            ).main(), daemon=True).start()
         except Exception as e:
             print(e)
             pass
@@ -60,13 +58,7 @@ class UI:
         key='specificwebsites'),
          sg.Multiline(
         key='specificwebsiteslist', 
-        visible=False)],
-        [sg.Button(
-        'Add Proxies (Optional)', 
-        key='proxies'),
-         sg.Multiline(
-        key='proxiesinput', 
-        visible=False)],   
+        visible=False)], 
         [sg.Button(
         'Submit', 
         key='submit', 
@@ -88,12 +80,10 @@ class UI:
         return form
     
     def get_UI_events(self):
-        Thread(target=self.refresh_window()).start()
         while True:
-            event, self.values = self.form.Read(timeout=400)
-            if event == 'WIN_CLOSED' or  event == (None, 'cancel'):
-                exit()
-
+            event, self.values = self.form.Read(timeout=10)
+            if event in (sg.WIN_CLOSED, '-CLOSE-'):
+                break
             match event:
 
                 case (None, 'cancel'):
@@ -101,7 +91,7 @@ class UI:
 
                 case 'submit':
                     try:
-                        self.submit_form()
+                        Thread(target=self.submit_form(),daemon=True).start()
                     except Exception as error:
                         self.console = self.form.find_element('console')
                         self.console.print(str(error))
@@ -125,14 +115,5 @@ class UI:
                         self.form.find_element('specificwebsites').Update('Remove Specific Websites')   
 
                         MoreWebsites=False        
-                case 'proxies': 
-                    if(self.form.find_element('proxiesinput').visible):
-                        self.form.find_element('proxiesinput').Update(visible=False)     
-                        self.form.find_element('proxies').Update('Add Proxies (Optional)')   
-                        MoreWebsites= True      
-                    elif(self.form.find_element('proxiesinput').visible==False):
-                        self.form.find_element('proxiesinput').Update(visible=True)
-                        self.form.find_element('proxies').Update('Remove Proxies')    
-                        MoreWebsites=False
 
-ui = UI()
+ui = Thread(target=UI()).start()
