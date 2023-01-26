@@ -8,6 +8,13 @@ Works on google's browser.
 Once you have provided the necessary information, you can run the script.
 The script will then search for forms on websites using the search string and submit the password, name and email address to each form it finds.
 
+# Running
+### With Console
+Open `TipulDay.py` , Edit the parameters and run it, make sure to run with debug to be able to stop the script mid run.
+### With UI
+open the `ui.py` , note that after running it, it will freeze until the end of the submittion and then print you a report.
+
+
 ## Disclaimer
 I do not take any responsibility from people using this script, this script is made to be used only for legal reasons,
 and in case someone uses it to break any law, its their full responsibility.
