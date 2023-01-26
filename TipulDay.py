@@ -42,7 +42,7 @@ FailedForms=0
 
 # the google search value to submit values into
 # recommended 'leave details'/'leave a phone number/Contact restraunts(for restraunt forms submitting)' etc
-SearchString = 'השאירו פרטים'#'Dog Adopting leave your details'
+SearchString = 'buy a boat' #'Dog Adopting leave your details'
 
 # Enter amount of websites to try to submit forums to:
 # number of websites is this value x12, note that google has a limit of this search value so from a specific number there will be no change.

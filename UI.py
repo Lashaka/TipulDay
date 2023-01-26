@@ -1,104 +1,119 @@
-# add a button  that adds example data to all fields
 import PySimpleGUI as sg
+from threading import Thread
+from modules.main import main
+class UI:
+    def __init__(self):
+        self.MoreWebsites = False
+        self.websites = []
+        self.form = self.create_window()
+        self.get_UI_events()
 
-import NewMain as main
 
-import os
+    def submit_form(self):
+        SearchString = self.values["searchstring"]
+        AmountOfWebsitesToSendFormsTo = int(float(self.values["websiteamount"]))
+        FormNameValue = self.values["name"]
+        FormPhoneNumberValue = self.values["phone"]
+        FormEmailValue = self.values["email"]
+        FormCommentValue = self.values["comment"]
+        if self.MoreWebsites:
+            self.SpecificWebsites = self.values["specificwebsiteslist"].split(",")
+            for Website in self.SpecificWebsites:
+                self.websites.append(Website)
 
-# If MoreWebsites is True, add websites to specificwebsites list
-MoreWebsites = False
-
-websites = ''
-
-def submit_form():
-    # Get values from form
-    SearchString = values['searchstring']
-    AmountOfWebsitesToSendFormsTo = int(float(values['websiteamount']))
-    FormNameValue = values['name']
-    FormPhoneNumberValue = values['phone']
-    FormEmailValue = values['email']
-    FormCommentValue = values['comment']
-
-    # If MoreWebsites is True, add websites to specificwebsites list
-    if MoreWebsites is True:
-        SpecificWebsites = values['specificwebsiteslist'].split(',')
-        for Website in SpecificWebsites:
-            websites.append(Website)
-
-        # Submit form using values
         try:
-            main.StartTipulDay(SearchString,AmountOfWebsitesToSendFormsTo,FormNameValue,FormPhoneNumberValue,FormEmailValue,FormCommentValue,MoreWebsites,SpecificWebsites,form)
+            print(self.websites)
+            Thread(target=main(
+            SearchString,
+            AmountOfWebsitesToSendFormsTo,
+            FormNameValue,
+            FormPhoneNumberValue,
+            FormEmailValue,
+            FormCommentValue,
+            self.websites,
+            self.form.find_element('console')
+            ).main(), daemon=True).start()
+        except Exception as e:
+            print(e)
             pass
-        except:
-            pass
 
-    # Submit form using values
-    main.StartTipulDay(SearchString,AmountOfWebsitesToSendFormsTo,FormNameValue,FormPhoneNumberValue,FormEmailValue,FormCommentValue,MoreWebsites,'')
-    pass
+    def create_window(self):
+        layout = [[sg.Text('Search String'), 
+        sg.Input(key='searchstring')],
+        [sg.Text('Website Amount (multiplies by 12)'), 
+        sg.Input(key='websiteamount')],
+        [sg.Text('Name'), 
+        sg.Input(key='name')],
+        [sg.Text('Phone Number'), 
+        sg.Input(key='phone')],
+        [sg.Text('Email'), 
+        sg.Input(key='email')],
+        [sg.Text('Comment'), 
+        sg.Input(key='comment')],
+        [sg.Button(
+        'Add Sample Info', 
+        key='sampleinfo')],
+        [sg.Button(
+        'Add Specific Websites (Optional, split using ,commas,)', 
+        key='specificwebsites'),
+         sg.Multiline(
+        key='specificwebsiteslist', 
+        visible=False)], 
+        [sg.Button(
+        'Submit', 
+        key='submit', 
+        button_color=('white', 'green'), 
+        bind_return_key=True),
+        sg.Button(
+        'Cancel', 
+        key='cancel', 
+        button_color=('white', 'red'))],
+        [sg.Text('Console Output:')],
+        [sg.Text()],
+        [sg.Multiline(
+        key='console', 
+        size=(80,20))]]
+        form = sg.Window(
+        'TipulDay', 
+        layout
+            )
+        return form
+    
+    def get_UI_events(self):
+        while True:
+            event, self.values = self.form.Read(timeout=10)
+            if event in (sg.WIN_CLOSED, '-CLOSE-'):
+                break
+            match event:
 
+                case (None, 'cancel'):
+                    exit()
 
+                case 'submit':
+                    try:
+                        Thread(target=self.submit_form(),daemon=True).start()
+                    except Exception as error:
+                        self.console = self.form.find_element('console')
+                        self.console.print(str(error))
 
-# Create form layout
-layout = [[sg.Text('Search String'), sg.Input(key='searchstring')],
-          [sg.Text('Website Amount (multiplies by 12)'), sg.Input(key='websiteamount')],
-          [sg.Text('Name'), sg.Input(key='name')],
-          [sg.Text('Phone Number'), sg.Input(key='phone')],
-          [sg.Text('Email'), sg.Input(key='email')],
-          [sg.Text('Comment'), sg.Input(key='comment')],
-          [sg.Button('Add Sample Info', key='sampleinfo')],
-          [sg.Button('Add Specific Websites (Optional)', key='specificwebsites'),
-           sg.Multiline(key='specificwebsiteslist', visible=False)],
-          [sg.Button('Add Proxies (Optional)', key='proxies'),
-           sg.Multiline(key='proxiesinput', visible=False)],   
-          [sg.Button('Submit', key='submit', button_color=('white', 'green'), bind_return_key=True),
-           sg.Button('Cancel', key='cancel', button_color=('white', 'red'))],
-           [sg.Text('Console Output:')],
-           [sg.Text()],
-           [sg.Multiline(key='console', size=(45,5))]]
+                case 'sampleinfo':    
+                    self.form.find_element('searchstring').Update('Dog Adopting leave your details')   
+                    self.form.find_element('websiteamount').Update('10')          
+                    self.form.find_element('name').Update('Nice Guy')   
+                    self.form.find_element('phone').Update('6666666666')   
+                    self.form.find_element('email').Update('Example@gmail.com')   
+                    self.form.find_element('comment').Update('I liked trains.')   
 
-# Create form and show it
-form = sg.Window('TipulDay', layout)
+                case 'specificwebsites':
+                    if self.form.find_element('specificwebsiteslist').visible:
+                        self.form.find_element('specificwebsiteslist').Update(visible=False)     
+                        self.form.find_element('specificwebsites').Update('Add Specific Websites (Optional)')   
+                        MoreWebsites= True
+                            
+                    elif(self.form.find_element('specificwebsiteslist').visible==False):
+                        self.form.find_element('specificwebsiteslist').Update(visible=True)
+                        self.form.find_element('specificwebsites').Update('Remove Specific Websites')   
 
-# Event loop to process form events
-while True:
-    event, values = form.Read()
-    if event in (None, 'cancel'):
-        os._exit(0) # stops all code execution and exits the program
-        break
-    elif event == 'submit':
-        try:
-            submit_form()
-        except Exception as error:
-            console = form.find_element('console')
-            console.print(str(error))
+                        MoreWebsites=False        
 
-    elif event == 'sampleinfo':    
-        form.find_element('searchstring').Update('Dog Adopting leave your details')   
-        form.find_element('websiteamount').Update('10')          
-        form.find_element('name').Update('Nice Guy')   
-        form.find_element('phone').Update('6666666666')   
-        form.find_element('email').Update('Example@gmail.com')   
-        form.find_element('comment').Update('I liked trains.')   
-
-    elif event == 'specificwebsites': 
-        if(form.find_element('specificwebsiteslist').visible==True):
-            form.find_element('specificwebsiteslist').Update(visible=False)     
-            form.find_element('specificwebsites').Update('Add Specific Websites (Optional)')   
-            MoreWebsites= True      
-        elif(form.find_element('specificwebsiteslist').visible==False):
-            form.find_element('specificwebsiteslist').Update(visible=True)
-            form.find_element('specificwebsites').Update('Remove Specific Websites')   
-
-            MoreWebsites=False        
-    elif event == 'proxies': 
-        if(form.find_element('proxiesinput').visible==True):
-            form.find_element('proxiesinput').Update(visible=False)     
-            form.find_element('proxies').Update('Add Proxies (Optional)')   
-            MoreWebsites= True      
-        elif(form.find_element('proxiesinput').visible==False):
-            form.find_element('proxiesinput').Update(visible=True)
-            form.find_element('proxies').Update('Remove Proxies')    
-            MoreWebsites=False      
-            
-form.Close()
-
+ui = Thread(target=UI()).start()

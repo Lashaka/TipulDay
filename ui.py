@@ -54,7 +54,7 @@ class UI:
         'Add Sample Info', 
         key='sampleinfo')],
         [sg.Button(
-        'Add Specific Websites (Optional)', 
+        'Add Specific Websites (Optional, split using ,commas,)', 
         key='specificwebsites'),
          sg.Multiline(
         key='specificwebsiteslist', 
@@ -72,7 +72,7 @@ class UI:
         [sg.Text()],
         [sg.Multiline(
         key='console', 
-        size=(45,5))]]
+        size=(80,20))]]
         form = sg.Window(
         'TipulDay', 
         layout
