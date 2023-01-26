@@ -1,6 +1,6 @@
-import collect_websites
-import constants as const
-import submit_forms
+from modules import *
+import constants.constants as const
+from threading import Thread
 try:
     import requests
     from bs4 import BeautifulSoup
@@ -15,22 +15,31 @@ except ImportError:
 
 
 class main(object):
-    def __init__(self: object) -> None:
+    def __init__(
+            self: object,
+            SEARCH_STRING:str,
+            AMOUNT_OF_WEBSITES_TO_SEND_FORMS_TO:int,
+            FORM_NAME:str,
+            FORM_EMAIL:str,
+            FORM_PHONE:str,
+            FORM_COMMENT:str,
+            websites,
+            console
+            ) -> None:
         """
         This function is used to initialize the class.
         """
-        ALL_CONSTANTS_IN_LIST = self.get_all_constants()
-        self.SEARCH_STRING = ALL_CONSTANTS_IN_LIST[0]
-        self.AMOUNT_OF_WEBSITES_TO_SEND_FORMS_TO = ALL_CONSTANTS_IN_LIST[1]
-        self.FORM_NAME = ALL_CONSTANTS_IN_LIST[2]
-        self.FORM_EMAIL = ALL_CONSTANTS_IN_LIST[3]
-        self.FORM_PHONE = ALL_CONSTANTS_IN_LIST[4]
-        self.FORM_COMMENT = ALL_CONSTANTS_IN_LIST[5]
-        self.ADD_SPECIFIC_WEBSITES = ALL_CONSTANTS_IN_LIST[6]
+        self.SEARCH_STRING = SEARCH_STRING
+        self.AMOUNT_OF_WEBSITES_TO_SEND_FORMS_TO = AMOUNT_OF_WEBSITES_TO_SEND_FORMS_TO
+        self.FORM_NAME = FORM_NAME
+        self.FORM_EMAIL = FORM_EMAIL
+        self.FORM_PHONE = FORM_PHONE
+        self.FORM_COMMENT = FORM_COMMENT
         self.SearchStartNum = 0
-        self.websites = []
+        self.websites = websites
         self.SuccessfullForms = 0
         self.FailedForms = 0
+        self.console = console
 
     def main(self: object) -> None:
         """
@@ -42,9 +51,7 @@ class main(object):
         Returns:
             None.
         """
-        if self.ADD_SPECIFIC_WEBSITES:
-            self.collect_specific_websites()
-        temp = collect_websites.collect_websites(
+        temp = Collect_websites(
             SEARCH_STRING=self.SEARCH_STRING,
             SearchStartNum=self.SearchStartNum,
             AMOUNT_OF_WEBSITES_TO_SEND_FORMS_TO=self.AMOUNT_OF_WEBSITES_TO_SEND_FORMS_TO,
@@ -52,35 +59,15 @@ class main(object):
         ).collect_and_append_websites()
         websites = temp[0]
         self.url = temp[1]
-        submit_forms.submit_forms(
+        Thread(Submit_forms(
             formname=self.FORM_NAME,
             formemail=self.FORM_EMAIL,
             formphone=self.FORM_PHONE,
             formcomment=self.FORM_COMMENT,
             websites=websites,
-            url=self.url).main()
-    def collect_specific_websites(self) -> None:
-        """
-        This function collects the websites from the file and appends them to the websites list.
-
-        :param self: The object.
-        :param websites: The list of websites.
-        :return: None
-        """
-        try:
-            with open(const.TXT_FILE_TEXT, "ר") as file:
-                for website in file:
-                    self.websites.append(website.strip())
-        except:
-            print(const.COULD_NOT_ADD_THE_WEBSITE_TEXT)
-            exit()
-
-    def get_all_constants(self) -> list:
-        alldata = __import__("user_settings_util").user_settings_util().get_all_data()
-        print(alldata)
-        return alldata
+            url=self.url,
+            console=self.console).main()).start()
 
 
-if __name__ == "__main__":
-    main = main()
-    main.main()
+
+
