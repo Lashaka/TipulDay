@@ -1,12 +1,20 @@
 # TipulDay
-To use this script, you will need to provide a search string, Phone Number, name, email address and optionaly a message.
+<table>
+<tr>
+    <td >To use this script, you will need to provide a search string, Phone Number, name, email address and optionaly a message.
 The search string should be a phrase that will provide form filling websites, otherwise the submitting success rate will be low.
 The Phone number, name, email address and optionaly the message will be used to fill out the forms.
 It is written in Python and can be used for a variety of purposes.
 Works on google's browser.
 
 Once you have provided the necessary information, you can run the script.
-The script will then search for forms on websites using the search string and submit the password, name and email address to each form it finds.
+The script will then search for forms on websites using the search string and submit the password, name and email address to each form it finds.</td>
+</td>
+  </tr>
+    <tr>
+      <td  align="center"><img src="https://github.com/Lashaka/Lashaka/blob/main/Images%20to%20present%20projects/TipulDay%20Images/TipulDayImage.png" width="500" height="555">
+</tr>
+</table>
 
 # Running
 ### With Console
